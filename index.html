@@ -1,1 +1,144 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+    <title>Roll Roll Roll Your Dice</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        body {
+            text-align: center;
+            background-color: aliceblue
+        }
+
+        form {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        input[type="number"] {
+            font-size: 20px;
+            padding: 12px 20px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 12px 20px;
+            height: auto;
+        }
+
+        .table-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+    <script>
+        function analyze() {
+            let numDice = document.getElementById("numDice").value;
+            let numRolls = document.getElementById("numRolls").value;
+
+            let rolls = [];
+            let sums = new Array(numDice * 6 + 1).fill(0);
+            let doubles = 0;
+            let triples = 0;
+
+            for (let i = 0; i < numRolls; i++) {
+                let roll = 0;
+                let counts = new Array(6).fill(0);
+                for (let j = 0; j < numDice; j++) {
+                    let die = Math.floor(Math.random() * 6) + 1;
+                    roll += die;
+                    counts[die - 1]++;
+                }
+                rolls.push(roll);
+                sums[roll]++;
+                if (counts.includes(2)) {
+                    doubles++;
+                }
+                if (counts.includes(3)) {
+                    triples++;
+                }
+            }
+
+            rolls.sort((a, b) => a - b);
+            let mean = rolls.reduce((a, b) => a + b, 0) / numRolls;
+            let median = rolls[Math.floor(numRolls / 2)];
+            let mode = 0;
+            let maxCount = 0;
+            for (let i = 1; i <= numDice * 6; i++) {
+                if (sums[i] > maxCount) {
+                    mode = i;
+                    maxCount = sums[i];
+                }
+            }
+
+            let output = document.getElementById("output");
+            output.style.display = "block";
+            output.innerHTML = `
+                                <tr>
+                                <th>Statistic</th>
+                                <th>Value</th>
+                                </tr>
+                                <tr>
+                                <td>Mean</td>
+                                <td>${mean}</td>
+                                </tr>
+                                <tr>
+                                <td>Median</td>
+                                <td>${median}</td>
+                                </tr>
+                                <tr>
+                                <td>Mode</td>
+                                <td>${mode}</td>
+                                </tr>
+                                <tr>
+                                <td>Frequency of each sum</td>
+                                <td>${sums.join(", ")}</td>
+                                </tr>
+                                <tr>
+                                <td>Frequency of doubles</td>
+                                <td>${doubles}</td>
+                                </tr>
+                                <tr>
+                                <td>Frequency of triples</td>
+                                <td>${triples}</td>
+                                </tr>
+                            `;
+        }
+    </script>
+</head>
+
+<body>
+    <div>
+        <h1>Roll Roll Roll Your Dice</h1>
+    </div>
+    <form id="form">
+        <label>Number of dice to roll (1-3): <input type="number" id="numDice" min="1" max="3"></label>
+        <br>
+        <br>
+        <label>Number of times to roll: <input type="number" id="numRolls"></label>
+        <br>
+        <br>
+        <button type="button" onclick="analyze()">Roll</button>
+    </form>
+    <br>
+    <br>
+    <div class="table-container">
+        <table id="output" style="display:none;"></table>
+    </div>
+</body>
+
+</html>
